@@ -2,3 +2,5 @@
 .idea/
 target/
 *.jar
+.env
+keystore.p12
