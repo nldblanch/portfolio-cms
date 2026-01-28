@@ -1,36 +1,41 @@
 package com.nb.portfolio.cms;
 
+import com.nb.portfolio.cms.controllers.ContentController;
+import com.nb.portfolio.cms.services.ContentService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
+import org.springframework.test.web.servlet.MockMvc;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import java.util.List;
 
-@SpringBootTest(
-        classes = ApplicationStarter.class,
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(controllers = ContentController.class)
 @Import(ContentControllerIT.TestSecurityConfig.class)
 class ContentControllerIT {
 
-    @Autowired private TestRestTemplate rest;
+    @Autowired
+    private MockMvc mvc;
+    @MockBean
+    private ContentService contentService;
 
     @Test
-    void getContent_returns200() {
-        ResponseEntity<String> res = rest.exchange("/api/content", HttpMethod.GET, null, String.class);
-        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
+    void getContent_returns200() throws Exception {
+        when(contentService.findAll()).thenReturn(List.of());
+        mvc.perform(get("/api/content"))
+                .andExpect(status().isOk());
     }
 
     @TestConfiguration

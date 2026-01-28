@@ -59,10 +59,32 @@
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc-openapi-starter-webmvc-ui.version}</version>
         </dependency>
+
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.1.0</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <quiet>true</quiet>
+                            <failOnMissingFile>false</failOnMissingFile>
+                            <files>
+                                <file>.env</file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -70,8 +92,20 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
                 <configuration>
                     <skipTests>true</skipTests>
+                    <environmentVariables>
+                        <!-- Inherit OS env automatically; this section exists to also support values loaded from .env via properties-maven-plugin -->
+                        <MONGODB_PUBLIC_URI>${MONGODB_PUBLIC_URI}</MONGODB_PUBLIC_URI>
+                        <MONGODB_ADMIN_URI>${MONGODB_ADMIN_URI}</MONGODB_ADMIN_URI>
+                        <MONGODB_TEST_URI>${MONGODB_TEST_URI}</MONGODB_TEST_URI>
+                        <MONGODB_TEST_ADMIN_URI>${MONGODB_TEST_ADMIN_URI}</MONGODB_TEST_ADMIN_URI>
+                        <ADMIN_USERNAME>${ADMIN_USERNAME}</ADMIN_USERNAME>
+                        <ADMIN_PASSWORD>${ADMIN_PASSWORD}</ADMIN_PASSWORD>
+                        <SSL_ENABLED>${SSL_ENABLED}</SSL_ENABLED>
+                        <SSL_KEYSTORE_PASSWORD>${SSL_KEYSTORE_PASSWORD}</SSL_KEYSTORE_PASSWORD>
+                    </environmentVariables>
                 </configuration>
                 <executions>
                     <execution>
